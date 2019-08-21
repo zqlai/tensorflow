@@ -1692,7 +1692,7 @@ def tf_py_wrap_cc(
             "-Wno-sign-compare",
             "-Wno-write-strings",
         ]),
-        linkopts = extra_linkopts,
+        linkopts = extra_linkopts + ["-L/vol7/home/zqlai/zqlai/softwares/ares/lib", "-lcares"],
         linkstatic = 1,
         deps = deps + extra_deps,
         **kwargs

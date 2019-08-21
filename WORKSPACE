@@ -2,15 +2,48 @@ workspace(name = "org_tensorflow")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-http_archive(
+#http_archive(
+#    name = "io_bazel_rules_closure",
+#    sha256 = "a38539c5b5c358548e75b44141b4ab637bba7c4dc02b46b1f62a96d6433f56ae",
+#    strip_prefix = "rules_closure-dbb96841cc0a5fb2664c37822803b06dab20c7d1",
+#    urls = [
+#        "https://mirror.bazel.build/github.com/bazelbuild/rules_closure/archive/dbb96841cc0a5fb2664c37822803b06dab20c7d1.tar.gz",
+#        "https://github.com/bazelbuild/rules_closure/archive/dbb96841cc0a5fb2664c37822803b06dab20c7d1.tar.gz",  # 2018-04-13
+#    ],
+#)
+
+local_repository(
     name = "io_bazel_rules_closure",
-    sha256 = "a38539c5b5c358548e75b44141b4ab637bba7c4dc02b46b1f62a96d6433f56ae",
-    strip_prefix = "rules_closure-dbb96841cc0a5fb2664c37822803b06dab20c7d1",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_closure/archive/dbb96841cc0a5fb2664c37822803b06dab20c7d1.tar.gz",
-        "https://github.com/bazelbuild/rules_closure/archive/dbb96841cc0a5fb2664c37822803b06dab20c7d1.tar.gz",  # 2018-04-13
-    ],
+    path = "/vol7/home/zqlai/zqlai/packages/rules_closure-dbb96841cc0a5fb2664c37822803b06dab20c7d1",
 )
+
+local_repository(
+    name = "bazel_toolchains",
+    path = "/vol7/home/zqlai/zqlai/packages/bazel-toolchains-9a111bd82161c1fbe8ed17a593ca1023fd941c70",
+)
+
+local_repository(
+    name = "io_bazel_rules_docker",
+    path = "/vol7/home/zqlai/zqlai/packages/rules_docker-c7a93454d27e09ef707dfca53887ed0ff4372f04",
+)
+
+
+local_repository(
+    name = "protobuf_archive",
+    path = "/vol7/home/zqlai/zqlai/packages/protobuf-3.6.1.2",
+)
+
+
+#local_repository(
+#    name = "six_archive",
+#    path = "/vol7/home/zqlai/zqlai/packages/six-1.10.0",
+#)
+#
+#local_repository(
+#    name = "gast_archive",
+#    path = "/vol7/home/zqlai/zqlai/packages/gast-0.2.0",
+#)
+
 
 load("@io_bazel_rules_closure//closure:defs.bzl", "closure_repositories")
 

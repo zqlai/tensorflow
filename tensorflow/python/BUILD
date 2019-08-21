@@ -4140,6 +4140,7 @@ tf_py_wrap_cc(
          tf_additional_gdr_deps()) + if_ngraph([
         "@ngraph_tf//:ngraph_tf",
     ]),
+    copts = ["-Lexternal/grpc/ares/lib -lcares"],
 )
 
 # ** Targets for Windows build (start) **

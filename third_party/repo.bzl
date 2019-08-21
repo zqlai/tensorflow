@@ -221,3 +221,76 @@ third_party_http_archive = repository_rule(
         "TF_SYSTEM_LIBS",
     ],
 )
+
+# add by zqlai to build a local repo
+# ref to https://github.com/bazelbuild/bazel/issues/3737
+def _tf_local_repository(ctx):
+    ctx.symlink(ctx.attr.path, "")
+
+tf_local_repository = repository_rule(
+    implementation=_tf_local_repository,
+	local=True,
+	attrs={"path": attr.string(mandatory=True)})
+
+
+# add by zqlai to load local archive
+# just like _tf_http_archive
+def _tf_local_archive(ctx):
+    if ("mirror.bazel.build" not in ctx.attr.urls[0] and
+        (len(ctx.attr.urls) < 2 and
+         ctx.attr.name not in _SINGLE_URL_WHITELIST.to_list())):
+        fail("tf_http_archive(urls) must have redundant URLs. The " +
+             "mirror.bazel.build URL must be present and it must come first. " +
+             "Even if you don't have permission to mirror the file, please " +
+             "put the correctly formatted mirror URL there anyway, because " +
+             "someone will come along shortly thereafter and mirror the file.")
+
+    use_syslib = _use_system_lib(ctx, ctx.attr.name)
+    if not use_syslib:
+        ctx.extract(
+            ctx.attr.path,
+            "",
+            ctx.attr.strip_prefix,
+        )
+        if ctx.attr.delete:
+            _apply_delete(ctx, ctx.attr.delete)
+        if ctx.attr.patch_file != None:
+            _apply_patch(ctx, ctx.attr.patch_file)
+
+    if use_syslib and ctx.attr.system_build_file != None:
+        # Use BUILD.bazel to avoid conflict with third party projects with
+        # BUILD or build (directory) underneath.
+        ctx.template("BUILD.bazel", ctx.attr.system_build_file, {
+            "%prefix%": ".." if _repos_are_siblings() else "external",
+        }, False)
+
+    elif ctx.attr.build_file != None:
+        # Use BUILD.bazel to avoid conflict with third party projects with
+        # BUILD or build (directory) underneath.
+        ctx.template("BUILD.bazel", ctx.attr.build_file, {
+            "%prefix%": ".." if _repos_are_siblings() else "external",
+        }, False)
+
+    if use_syslib:
+        for internal_src, external_dest in ctx.attr.system_link_files.items():
+            ctx.symlink(Label(internal_src), ctx.path(external_dest))
+
+tf_local_archive = repository_rule(
+    implementation = _tf_local_archive,
+    attrs = {
+        "sha256": attr.string(mandatory = True),
+        "path": attr.string(mandatory = True),
+        # zqlai: keep this attrs
+        "urls": attr.string_list(mandatory = False, allow_empty = True),
+        "strip_prefix": attr.string(),
+        "type": attr.string(),
+        "delete": attr.string_list(),
+        "patch_file": attr.label(),
+        "build_file": attr.label(),
+        "system_build_file": attr.label(),
+        "system_link_files": attr.string_dict(),
+    },
+    environ = [
+        "TF_SYSTEM_LIBS",
+    ],
+)
