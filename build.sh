@@ -1,4 +1,5 @@
 bazel --batch build --verbose_failures \
+  --define=framework_shared_object=true \
   --copt=-DPNG_ARM_NEON_OPT=0 \
   --copt=-L/vol7/home/zqlai/zqlai/softwares/ares/lib \
   --copt=-lcares \
